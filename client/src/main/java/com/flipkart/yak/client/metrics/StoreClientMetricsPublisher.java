@@ -27,6 +27,7 @@ public class StoreClientMetricsPublisher {
   private static final String METRIC_METHOD_MUTATE_NAME = "mutate.";
   private static final String METRIC_METHOD_CHECK_AND_MUTATE_NAME = "checkMutate.";
   private static final String METRIC_METHOD_INCREMENT_NAME = "increment.";
+  private static final String METRIC_METHOD_CONNECTION_NAME = "connection.";
   private static final String METRIC_STORE_EXCEPTIONS = "storeExceptions";
   private static final String METRIC_TIMER = "duration";
   private static final String METRIC_INIT = "init";
@@ -96,6 +97,10 @@ public class StoreClientMetricsPublisher {
   public static final String INCREMENT_COMPLETE = "incrementComplete";
   public static final String INCREMENT_GEN_EXCEPTION = "incrementGenericException";
 
+  public static final String CONNECTION_INIT = "connectionInit";
+  public static final String CONNECTION_COMPLETE = "connectionComplete";
+  public static final String CONNECTION_GEN_EXCEPTION = "connectionGenericException";
+
   public static final String APPEND_TIMER = "appendTimer";
   public static final String INDEX_PUT_TIMER = "indexPutTimer";
   public static final String PUT_TIMER = "putTimer";
@@ -112,6 +117,7 @@ public class StoreClientMetricsPublisher {
   public static final String MUTATE_TIMER = "mutateTimer";
   public static final String CHECK_MUTATE_TIMER = "checkMutateTimer";
   public static final String INCREMENT_TIMER = "incrementTimer";
+  public static final String CONNECTION_TIMER = "connectionTimer";
 
   public static final String ACTIVE_THREAD_COUNT = "activeThreadCount";
   public static final String QUEUE_SIZE = "pendingQueueSize";
@@ -147,9 +153,13 @@ public class StoreClientMetricsPublisher {
     timerMapping.put(MUTATE_TIMER, METRIC_METHOD_MUTATE_NAME + METRIC_TIMER);
     timerMapping.put(CHECK_MUTATE_TIMER, METRIC_METHOD_CHECK_AND_MUTATE_NAME + METRIC_TIMER );
     timerMapping.put(INCREMENT_TIMER, METRIC_METHOD_INCREMENT_NAME + METRIC_TIMER );
+    timerMapping.put(CONNECTION_TIMER, METRIC_METHOD_CONNECTION_NAME + METRIC_TIMER);
 
     meterMapping.put(INDEX_PUT_INIT, METRIC_METHOD_INDEX_PUT_NAME + METRIC_REQUESTS_TYPE + METRIC_INIT);
     meterMapping.put(INDEX_PUT_COMPLETE, METRIC_METHOD_INDEX_PUT_NAME + METRIC_REQUESTS_TYPE + METRIC_COMPLETE);
+
+    meterMapping.put(INDEX_GET_INIT, METRIC_METHOD_INDEX_GET_NAME + METRIC_REQUESTS_TYPE + METRIC_INIT);
+    meterMapping.put(INDEX_GET_COMPLETE, METRIC_METHOD_INDEX_GET_NAME + METRIC_REQUESTS_TYPE + METRIC_COMPLETE);
 
     meterMapping.put(APPEND_INIT, METRIC_METHOD_APPEND_NAME + METRIC_REQUESTS_TYPE + METRIC_INIT);
     meterMapping.put(APPEND_COMPLETE, METRIC_METHOD_APPEND_NAME + METRIC_REQUESTS_TYPE + METRIC_COMPLETE);
@@ -193,6 +203,9 @@ public class StoreClientMetricsPublisher {
     meterMapping.put(INCREMENT_INIT, METRIC_METHOD_INCREMENT_NAME + METRIC_REQUESTS_TYPE + METRIC_INIT);
     meterMapping.put(INCREMENT_COMPLETE, METRIC_METHOD_INCREMENT_NAME + METRIC_REQUESTS_TYPE + METRIC_COMPLETE);
 
+    meterMapping.put(CONNECTION_INIT, METRIC_METHOD_CONNECTION_NAME + METRIC_REQUESTS_TYPE + METRIC_INIT);
+    meterMapping.put(CONNECTION_COMPLETE, METRIC_METHOD_CONNECTION_NAME + METRIC_REQUESTS_TYPE + METRIC_COMPLETE);
+
     errorMapping.put(BATCH_GEN_EXCEPTION, METRIC_METHOD_BATCH_NAME + METRIC_EXCEPTIONS_TYPE);
     errorMapping.put(BATCH_PUT_GEN_EXCEPTION, METRIC_METHOD_BATCH_PUT_NAME + METRIC_EXCEPTIONS_TYPE);
     errorMapping.put(CAS_GEN_EXCEPTION, METRIC_METHOD_CAS_NAME + METRIC_EXCEPTIONS_TYPE);
@@ -209,6 +222,7 @@ public class StoreClientMetricsPublisher {
     errorMapping.put(MUTATE_GEN_EXCEPTION, METRIC_METHOD_MUTATE_NAME + METRIC_EXCEPTIONS_TYPE);
     errorMapping.put(CHECK_MUTATE_GEN_EXCEPTION, METRIC_METHOD_MUTATE_NAME + METRIC_EXCEPTIONS_TYPE);
     errorMapping.put(INCREMENT_GEN_EXCEPTION, METRIC_METHOD_INCREMENT_NAME + METRIC_EXCEPTIONS_TYPE);
+    errorMapping.put(CONNECTION_GEN_EXCEPTION, METRIC_METHOD_CONNECTION_NAME + METRIC_EXCEPTIONS_TYPE);
 
 
     // Start metric on application start
