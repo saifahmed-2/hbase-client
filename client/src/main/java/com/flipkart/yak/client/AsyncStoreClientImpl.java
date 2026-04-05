@@ -98,25 +98,23 @@ public class AsyncStoreClientImpl implements AsyncStoreClient {
     this.publisher =
         new StoreClientMetricsPublisher(this.registry, METRIC_PREFIX_KEY + siteConfig.getStoreName() + ".");
     publisher.incrementMetric(StoreClientMetricsPublisher.CONNECTION_INIT);
-    Timer.Context connectionTimer = publisher.getTimer(StoreClientMetricsPublisher.CONNECTION_TIMER);
-    Configuration hbaseConf = AsyncStoreClientUtis.buildHbaseConfiguration(siteConfig);
-    try {
-      if (siteConfig.getHadoopUserName().isPresent()) {
-        User user = User.create(UserGroupInformation.createRemoteUser(siteConfig.getHadoopUserName().get()));
-        this.connection = ConnectionFactory.createAsyncConnection(hbaseConf, user).get(timeoutInSeconds, TimeUnit.SECONDS);
-      } else {
-        this.connection = ConnectionFactory.createAsyncConnection(hbaseConf).get(timeoutInSeconds, TimeUnit.SECONDS);
+    try (Timer.Context connectionTimer = publisher.getTimer(StoreClientMetricsPublisher.CONNECTION_TIMER)) {
+      Configuration hbaseConf = AsyncStoreClientUtis.buildHbaseConfiguration(siteConfig);
+      try {
+        if (siteConfig.getHadoopUserName().isPresent()) {
+          User user = User.create(UserGroupInformation.createRemoteUser(siteConfig.getHadoopUserName().get()));
+          this.connection = ConnectionFactory.createAsyncConnection(hbaseConf, user).get(timeoutInSeconds, TimeUnit.SECONDS);
+        } else {
+          this.connection = ConnectionFactory.createAsyncConnection(hbaseConf).get(timeoutInSeconds, TimeUnit.SECONDS);
+        }
+        publisher.incrementMetric(StoreClientMetricsPublisher.CONNECTION_COMPLETE);
+      } catch (TimeoutException | ExecutionException | InterruptedException e) {
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
+        publisher.incrementErrorMetric(StoreClientMetricsPublisher.CONNECTION_GEN_EXCEPTION, e);
+        throw e;
       }
-      publisher.incrementMetric(StoreClientMetricsPublisher.CONNECTION_COMPLETE);
-    } catch (TimeoutException | ExecutionException e) {
-      publisher.incrementErrorMetric(StoreClientMetricsPublisher.CONNECTION_GEN_EXCEPTION, e);
-      throw e;
-    } catch (InterruptedException e) {
-      publisher.incrementErrorMetric(StoreClientMetricsPublisher.CONNECTION_GEN_EXCEPTION, e);
-      Thread.currentThread().interrupt();
-      throw e;
-    } finally {
-      connectionTimer.close();
     }
     this.executor =
         new ThreadPoolExecutor(siteConfig.getPoolSize(), siteConfig.getPoolSize(), 0L, TimeUnit.MILLISECONDS,
